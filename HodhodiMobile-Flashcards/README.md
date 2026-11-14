@@ -99,13 +99,13 @@ Then on GitHub: **Settings → Pages → Build and deployment → Source: Deploy
 2. Click **Add file → Upload files**, drop in everything from this folder, and commit.
 3. Turn on Pages as above.
 
-After about a minute the app is live at `[https://amis883.github.io/HodhodiMobile-Flashcards/](https://github.com/Amis883/HodhodiMobile-Flashcards)`.
+After about a minute the app is live at `(https://github.com/Amis883/HodhodiMobile-Flashcards)`.
 GitHub does not allow spaces in repository names, so "HodhodiMobile Flashcards" becomes `HodhodiMobile-Flashcards`.
 
 ### Share it
 Send the link. Example message:
 
-> Free flashcard app 🐦 Open this in Safari (iPhone) or Chrome (Android) and add it to your Home Screen: https://amis883.github.io/HodhodiMobile-Flashcards/
+> Free flashcard app 🐦 Open this in Safari (iPhone) or Chrome (Android) and add it to your Home Screen: [https://amis883.github.com/HodhodiMobile-Flashcards/](https://github.com/Amis883/HodhodiMobile-Flashcards)
 
 ---
 
