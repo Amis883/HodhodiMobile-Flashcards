@@ -2,7 +2,7 @@
 
 A free spaced-repetition flashcard app for your phone. It installs like a normal app on **iPhone and Android**, works **offline**, needs **no account**, and keeps all your cards on your own device.
 
-**Open the app:** https://amis883.github.com/HodhodiMobile-Flashcards/
+**Open the app:** [https://amis883.github.com/HodhodiMobile-Flashcards/](https://github.com/Amis883/HodhodiMobile-Flashcards)
 
 > Hodhodi is an independent project. It is not affiliated with or endorsed by Anki.
 
