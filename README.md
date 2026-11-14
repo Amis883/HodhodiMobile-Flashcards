@@ -7,7 +7,7 @@
 <p align="center"><b>Remember what you learn. Study a little each day, and the app decides what to review next.</b></p>
 
 <p align="center">
-  <a href="https://amis883.github.io/HodhodiMobile-Flashcards/"><b>▶ Open the app</b></a> ·
+  <a href="[https://amis883.github.io/HodhodiMobile-Flashcards/](https://amis883.github.io/HodhodiMobile-Flashcards/)"><b>▶ Open the app</b></a> ·
   <a href="#install-in-30-seconds">Install</a> ·
   <a href="#how-studying-works">How it works</a> ·
   <a href="#features">Features</a> ·
