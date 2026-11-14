@@ -2,7 +2,7 @@
 
 A free spaced-repetition flashcard app for your phone. It installs like a normal app on **iPhone and Android**, works **offline**, needs **no account**, and keeps all your cards on your own device.
 
-**Open the app:** https://amis883.github.io/HodhodiMobile-Flashcards/
+**Open the app:** [https://amis883.github.com/HodhodiMobile-Flashcards/](https://github.com/Amis883/HodhodiMobile-Flashcards)
 
 > Hodhodi is an independent project. It is not affiliated with or endorsed by Anki.
 
@@ -99,7 +99,7 @@ Then on GitHub: **Settings → Pages → Build and deployment → Source: Deploy
 2. Click **Add file → Upload files**, drop in everything from this folder, and commit.
 3. Turn on Pages as above.
 
-After about a minute the app is live at `https://amis883.github.io/HodhodiMobile-Flashcards/`.
+After about a minute the app is live at `[https://amis883.github.io/HodhodiMobile-Flashcards/](https://github.com/Amis883/HodhodiMobile-Flashcards)`.
 GitHub does not allow spaces in repository names, so "HodhodiMobile Flashcards" becomes `HodhodiMobile-Flashcards`.
 
 ### Share it
