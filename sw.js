@@ -1,5 +1,5 @@
 // Hodhodi service worker: network-first, falls back to cache so the app works offline.
-const C = 'hodhodi-v3';
+const C = 'hodhodi-v4';
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(C).then(c => c.addAll(['./', 'index.html', 'manifest.webmanifest', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png'])));
   self.skipWaiting();

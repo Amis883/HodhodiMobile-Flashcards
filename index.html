@@ -139,7 +139,7 @@ function render(){
   const all=counts(null);
   mn.innerHTML=(navigator.standalone||S.hint?'':'<div class="card2" style="font-size:14px">To install: tap Share, then Add to Home Screen. <button onclick="S.hint=1;save();render()">Got it</button></div>')+'<div class="row hdr"><b>Deck</b><div class="cn"><span class="n">New</span><span class="l">Learn</span><span class="r">Due</span></div></div>'+S.decks.map(d=>{const c=counts(d.id),tot=S.cards.filter(x=>x.deck==d.id).length;
    return `<div class="row" onclick="startStudy(${d.id})"><div style="min-width:0"><div class="t">${esc(d.name)}</div>${O().compact?'':'<div class="sub">'+tot+' cards</div>'}</div><div class="cn"><span class="n ${c.n?'':'z'}">${c.n}</span><span class="l ${c.l?'':'z'}">${c.l}</span><span class="r ${c.r?'':'z'}">${c.r}</span></div><button onclick="event.stopPropagation();deckMenu(${d.id})">⚙︎</button></div>`}).join('')+'<div class="acts"><a href="https://ankiweb.net/shared/decks" target="_blank" rel="noopener">Get Shared</a><button onclick="newDeck()">Create Deck</button><button onclick="pickTxt()">Import File</button></div><div class="sub" style="text-align:center">Blue: new · Red: learning · Green: review</div><button class="fab" onclick="editCard()">+</button>'}
- else if(V.tab=='browse'){hd.innerHTML='<span>Browse</span>';
+ else if(V.tab=='browse'){renderBrowse(hd,mn)}else if(false){hd.innerHTML='<span>Browse</span>';
   const q=V.q.trim().toLowerCase();let a=S.cards;
   if(q){a=a.filter(c=>q.split(/\s+/).every(w=>{if(w=='is:due')return c.state!='new'&&c.due<=eod();if(w=='is:new')return c.state=='new';if(w=='is:suspended')return c.susp;if(w.startsWith('tag:'))return(c.tags||'').toLowerCase().includes(w.slice(4));if(w.startsWith('deck:')){const d=S.decks.find(d=>d.id==c.deck);return d&&d.name.toLowerCase().includes(w.slice(5))}return nz((c.front+' '+c.back+' '+c.tags).toLowerCase()).includes(nz(w))}))}
   mn.innerHTML=`<input id="q" placeholder="Search · tag:x · is:due · is:new · deck:x" value="${esc(V.q)}" oninput="V.q=this.value;clearTimeout(V.t);V.t=setTimeout(()=>{render();const i=$('q');i.focus();i.setSelectionRange(99,99)},250)"><div class="sub" style="margin-bottom:8px">${a.length} cards</div>`+a.slice(0,200).map(c=>`<div class="row" onclick="editCard(${c.id})"><div style="min-width:0"><div class="t">${esc(c.front.replace(/\{\{c\d+::(.*?)\}\}/g,'$1'))}</div><div class="sub">${esc((S.decks.find(d=>d.id==c.deck)||{}).name||'')} · ${c.state=='new'?'new':c.state=='learn'?'learning':'due in '+fmt(Math.max(0,c.due-Date.now()))}${c.susp?' · suspended':''}</div></div></div>`).join('')+'<button class="fab" onclick="editCard()">+</button>'}
@@ -171,7 +171,7 @@ function pickTxt(){const f=document.createElement('input');f.type='file';f.accep
 function imTxt(v){let hs=null,tc=-1,dc=-1,html=false;const sk=new Set();const un=s=>{s=s.trim();if(s.length>1&&s[0]=='"'&&s.slice(-1)=='"')s=s.slice(1,-1).replace(/""/g,'"');if(html||/<(br|div|b|i|p|span)\b/i.test(s)){s=s.replace(/<br\s*\/?>/gi,'\n').replace(/<\/(div|p)>/gi,'\n');s=new DOMParser().parseFromString(s,'text/html').body.textContent||''}return s.trim()};
  for(const l of v.split(/\r?\n/)){if(l[0]=='#'){const m=l.slice(1).split(':'),k=m[0].trim().toLowerCase(),a=(m[1]||'').trim();if(k=='separator')hs={tab:'\t',semicolon:';',comma:',',pipe:'|',space:' '}[a]||'\t';else if(k=='html')html=a=='true';else if(k.endsWith(' column')){const i=+a-1;if(i>=0)sk.add(i);if(k=='tags column')tc=i;if(k=='deck column')dc=i}continue}
   if(!l.trim())continue;const p=l.split(hs||(l.includes('\t')?'\t':';')),f=p.map((x,i)=>i).filter(i=>!sk.has(i));
-  let d=1;if(dc>=0&&p[dc]&&un(p[dc])){const nm=un(p[dc]);let dd=S.decks.find(x=>x.name==nm);if(!dd){dd={id:S.nid++,name:nm};S.decks.push(dd)}d=dd.id}
+  let d=V.tdeck||1;if(!V.tdeck&&dc>=0&&p[dc]&&un(p[dc])){const nm=un(p[dc]);let dd=S.decks.find(x=>x.name==nm);if(!dd){dd={id:S.nid++,name:nm};S.decks.push(dd)}d=dd.id}
   const fr=un(p[f[0]]||'');if(!fr)continue;S.cards.push(mk(d,fr,un(p[f[1]]||''),tc>=0&&p[tc]?un(p[tc]):(tc<0&&f.length>=3&&p[f[2]]?un(p[f[2]]):'')))}}
 const TB=()=>'<button onclick="V.study=null;render()">Decks</button><button onclick="editCard(0)">Add</button><button onclick="V.cur&&editCard(V.cur.id,1)">Edit</button><button onclick="V.study=null;V.tab=\'browse\';render()">Find</button>';
 function tc(){const t=$('tl');if(t)t.remove()}
@@ -235,7 +235,7 @@ async function importApkg(buf){
  const med=async f=>{const k=bn[f];if(k&&z.file(k)){const id=newId();await mput(id,await z.file(k).async('blob'));return id}};
  const imR=/<img[^>]+src=["']?([^"'> ]+)/i,auR=/\[sound:([^\]]+)\]/;let n=0;
  for(const v of q('select id,flds,tags from notes')){
-  const F=String(v[1]).split('\x1f'),R=F.slice(1).join(' '),c=mk(dget(dm[cd[v[0]]]||'Default'),htxt(F[0]),htxt(F.slice(1).join('\n')),String(v[2]).trim());
+  const F=String(v[1]).split('\x1f'),R=F.slice(1).join(' '),c=mk(V.tdeck||dget(dm[cd[v[0]]]||'Default'),htxt(F[0]),htxt(F.slice(1).join('\n')),String(v[2]).trim());
   try{const g=async(s,r,i)=>{const m=s.match(r);return m?await med(i?decodeURIComponent(m[1]):m[1]):0};c.m={fi:await g(F[0],imR,1),bi:await g(R,imR,1),fa:await g(F[0],auR),ba:await g(R,auR)};Object.keys(c.m).forEach(k=>c.m[k]||delete c.m[k])}catch(e){c.m={}}
   if(!c.front&&!c.m.fi)continue;S.cards.push(c);n++}
  save();alert('Imported '+n+' cards');render()}
@@ -330,12 +330,35 @@ function resetW(){if(S.o){delete S.o.w4;delete S.o.w5}save();render()}
 function cinfo(){const c=V.cur;if(!c)return;const dt=c.last?(Date.now()-c.last)/D:0,l=['State: '+c.state,'Reviews: '+(c.reps||0),'Lapses: '+(c.lapses||0),'Interval: '+(c.ivl||0)+' d'];
  if(c.s){l.push('Stability: '+c.s.toFixed(2)+' d','Difficulty: '+c.d.toFixed(2)+' / 10');if(c.state=='review')l.push('Retrievability: '+Math.round(fR(dt,c.s)*100)+'%')}
  l.push('Due: '+(c.state=='new'?'new':new Date(c.due).toLocaleString()));alert(l.join('\n'))}
+const adt=c=>c.at||(c.state=='new'?c.due:0);
+function bfilter(){const q=V.q.trim().toLowerCase();let a=S.cards.filter(c=>!V.bd||c.deck==V.bd);
+ if(q)a=a.filter(c=>q.split(/\s+/).every(w=>{if(w=='is:due')return c.state!='new'&&c.due<=eod();if(w=='is:new')return c.state=='new';if(w=='is:suspended')return !!c.susp;if(w.startsWith('tag:'))return(c.tags||'').toLowerCase().includes(w.slice(4));if(w.startsWith('added:'))return Date.now()-adt(c)<(+w.slice(6)||1)*D;if(w.startsWith('deck:')){const d=S.decks.find(x=>x.id==c.deck);return !!d&&d.name.toLowerCase().includes(w.slice(5))}return nz((c.front+' '+c.back+' '+c.tags).toLowerCase()).includes(nz(w))}));
+ return V.bo=='old'?a:a.slice().reverse()}
+function renderBrowse(hd,mn){const a=bfilter(),sm=V.sm,sel=V.sel||(V.sel=new Set());
+ hd.innerHTML=`<span>Browse</span><button onclick="V.sm=!V.sm;V.sel=new Set();render()">${sm?'Done':'Select'}</button>`;
+ let h=`<input id="q" placeholder="Search · tag:x · is:due · is:new · added:1" value="${esc(V.q)}" oninput="V.q=this.value;clearTimeout(V.t);V.t=setTimeout(()=>{render();const i=$('q');i.focus();i.setSelectionRange(99,99)},250)"><div class="pr2"><select onchange="V.bd=+this.value;render()"><option value="0">All decks</option>${S.decks.map(d=>`<option value="${d.id}" ${V.bd==d.id?'selected':''}>${esc(d.name)}</option>`).join('')}</select><select onchange="V.bo=this.value;render()"><option value="new" ${V.bo!='old'?'selected':''}>Newest first</option><option value="old" ${V.bo=='old'?'selected':''}>Oldest first</option></select></div><div class="sub" style="margin-bottom:8px">${a.length} cards${sm?' · '+sel.size+' selected':''}${a.length>200?' · showing the first 200':''}</div>`;
+ if(sm)h+=`<div class="mb"><button onclick="selAll()">Select all ${a.length}</button><button onclick="V.sel=new Set();render()">Clear</button><button onclick="moveSel()">Move…</button><button onclick="suspSel()">Suspend</button><button style="color:var(--red)" onclick="delSel()">Delete</button></div>`;
+ h+=a.slice(0,200).map(c=>`<div class="row" onclick="${sm?'tg('+c.id+')':'editCard('+c.id+')'}">${sm?`<span style="font-size:22px">${sel.has(c.id)?'☑':'☐'}</span>`:''}<div style="min-width:0;flex:1"><div class="t">${esc(c.front.replace(/\{\{c\d+::(.*?)\}\}/g,'$1'))}</div><div class="sub">${esc(dn(c.deck))} · ${c.state=='new'?'new':c.state=='learn'?'learning':'due in '+fmt(Math.max(0,c.due-Date.now()))}${c.susp?' · suspended':''}</div></div></div>`).join('')+(sm?'':'<button class="fab" onclick="editCard()">+</button>');
+ mn.innerHTML=h}
+function tg(id){const m=$('mn'),st=m.scrollTop;if(V.sel.has(id))V.sel.delete(id);else V.sel.add(id);render();m.scrollTop=st}
+function selAll(){V.sel=new Set(bfilter().map(c=>c.id));render()}
+function moveSel(){if(!V.sel.size)return;pickDeck(id=>{bkNow();S.cards.forEach(c=>{if(V.sel.has(c.id))c.deck=id});save();alert('Moved '+V.sel.size+' cards to '+dn(id));V.sel=new Set();render()},{title:'Move '+V.sel.size+' cards to…'})}
+async function delSel(){const n=V.sel.size;if(!n||!await sure('Delete '+n+' cards? This cannot be undone.'))return;bkNow();S.cards.filter(c=>V.sel.has(c.id)).forEach(c=>Object.values(c.m||{}).forEach(mdel));S.cards=S.cards.filter(c=>!V.sel.has(c.id));V.sel=new Set();save();render()}
+function suspSel(){S.cards.forEach(c=>{if(V.sel.has(c.id))c.susp=c.susp?0:1});save();render()}
+function pickDeck(cb,opt){opt=opt||{};tc();const t=document.createElement('div');t.id='tl';t.className='tl';const A=S.decks.map(d=>[esc(d.name)+' ('+S.cards.filter(c=>c.deck==d.id).length+')',d.id]);
+ t.innerHTML='<div class="tp" style="max-height:80vh;overflow:auto" onclick="event.stopPropagation()"><div style="text-align:center;color:#999;margin-bottom:6px">'+(opt.title||'Choose a deck')+'</div><div class="tg" style="grid-template-columns:1fr 1fr">'+A.map((a,i)=>'<button data-i="'+i+'">'+a[0]+'</button>').join('')+'<button data-n="1">＋ New deck…</button>'+(opt.from?'<button data-f="1">Decks from the file</button>':'')+'</div></div>';
+ t.onclick=e=>{if(e.target===t)tc()};
+ t.querySelectorAll('button').forEach(b=>b.onclick=async()=>{let id;if(b.dataset.n){const n=await dlg('New deck name',{input:'',ok:'Create'});if(!n||!n.trim())return;const d={id:S.nid++,name:n.trim()};S.decks.push(d);save();id=d.id}else if(b.dataset.f)id=0;else id=A[+b.dataset.i][1];tc();cb(id)});
+ document.body.appendChild(t)}
+async function fileIn(x){const b=await x.arrayBuffer(),u=new Uint8Array(b,0,2),pk=u[0]==80&&u[1]==75,t=pk?'':new TextDecoder().decode(b);
+ if(!pk&&(t.trim().startsWith('{"fmt"')||t.trim().startsWith('{"decks"')))return doImport(t);
+ pickDeck(async id=>{V.tdeck=id;try{if(pk)await importApkg(b);else await doImport(t)}catch(e){alert('Could not read this file. '+(e&&e.message||''))}V.tdeck=0},{title:'Import '+esc(x.name||'file')+' into which deck?',from:1})}
 function theme(t){if(t)document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme}
 function expo(){const t=$('imp');t.value=JSON.stringify(S);t.select()}
 function impo(){return doImport($('imp').value)}function impo0(){const v='';if(!v)return;
  try{if(v.startsWith('{"decks"')){const o=JSON.parse(v);if(o.cards&&o.decks){S=o}}else imTxt(v)
   save();alert('Imported');render()}catch(e){alert('Could not read that text')}}
-function mk(deck,f,b,t){return{id:S.nid++,deck:+deck,front:f,back:b,tags:t,state:'new',step:0,ivl:0,ease:2.5,lapses:0,due:Date.now(),susp:0}}
+function mk(deck,f,b,t){return{id:S.nid++,at:Date.now(),deck:+deck,front:f,back:b,tags:t,state:'new',step:0,ivl:0,ease:2.5,lapses:0,due:Date.now(),susp:0}}
 async function newDeck(){const n=await dlg('New deck name',{input:'',ok:'Create'});if(n&&n.trim()){S.decks.push({id:S.nid++,name:n.trim()});save();render()}}
 function editCard(id,fromStudy){const c=id?S.cards.find(x=>x.id==id):null,sh=$('sh');sh.hidden=false;E={...(c&&c.m||{})};setTimeout(()=>{prev('f');prev('b')},0);
  sh.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:10px"><button onclick="closeSh()">Cancel</button><b>${c?'Edit card':'Add card'}</b><button onclick="saveCard(${id||0})"><b>Save</b></button></div>

@@ -7,7 +7,7 @@
 <p align="center"><b>Remember what you learn. Study a little each day, and the app decides what to review next.</b></p>
 
 <p align="center">
-  <a href="[https://amis883.github.io/HodhodiMobile-Flashcards/](https://amis883.github.io/HodhodiMobile-Flashcards/)"><b>▶ Open the app</b></a> ·
+  <a href="https://amis883.github.io/HodhodiMobile-Flashcards/"><b>▶ Open the app</b></a> ·
   <a href="#install-in-30-seconds">Install</a> ·
   <a href="#how-studying-works">How it works</a> ·
   <a href="#features">Features</a> ·
@@ -73,6 +73,7 @@ Tap the ⚙︎ button while studying for Undo, Card Info, Night Mode and more. E
 | --- | --- |
 | 🧠 **Smart scheduling** | FSRS (versions 4.5 and 5) with adjustable target retention, interval fuzz, and an optimizer that learns from your own reviews. Classic SM-2 style scheduling is also available. |
 | 🖼️ **Rich cards** | Add images, record your voice, or attach audio files. Cards can read themselves aloud. |
+| 🗂️ **Organised decks** | One deck per subject. Choose the deck when you import, and use Browse → Select to move or delete many cards at once. |
 | 📥 **Bring your Anki cards** | Import Anki text exports and `.apkg` packages, or paste lines of `front;back`. |
 | 📤 **Your data is yours** | Export to text or CSV, or make a full backup with images and audio. Automatic local backups too. |
 | 📊 **Know your progress** | Card counts, cards studied today, and a 30-day forecast of upcoming reviews. |
